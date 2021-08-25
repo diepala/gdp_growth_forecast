@@ -28,7 +28,7 @@ Take a look at the [documentation](documentation.html)!
 
 ## Usage
 
-For the tool to work properly, it is needed the sqlite3 database with the dataset. Download the database [here](https://www.kaggle.com/worldbank/world-development-indicators/version/2?select=database.sqlite)! and place it in the base directory of the project renamed to `db.sqlite3`.
+For the tool to work properly, it is needed the sqlite3 database with the dataset. Download the database [here](https://www.kaggle.com/worldbank/world-development-indicators/version/2?select=database.sqlite) and place it in the base directory of the project renamed to `db.sqlite3`.
 
 The `cli` script is the one to be executed by the user.
 It is used to select the model features, train the model and make the predictions.
