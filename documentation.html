@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to gdp_growth_forecast’s documentation! &#8212; gdp_growth_forecast 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gdp_growth_forecast" href="api/modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-gdp-growth-forecast-s-documentation">
+<h1>Welcome to gdp_growth_forecast’s documentation!<a class="headerlink" href="#welcome-to-gdp-growth-forecast-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">gdp_growth_forecast</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/cli.html">cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html">utils package</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="gdp-growth-forecast">
+<h1>GDP Growth Forecast<a class="headerlink" href="#gdp-growth-forecast" title="Permalink to this headline">¶</a></h1>
+<p>GPD Growth Forecast is a software that provides a command line interface tool
+to train a model and make predictions about GDP Growth for the different countries in the world.</p>
+<p>The way the software works is:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>It processes the database data by removing columns with too many NaN and replacing the remaining with the mean of other samples, accoeding to different criterias (mean by year, mean by income group,       …).</p></li>
+<li><p>The data is also organized in a convenient way for manipulation, with one column for each indicator.</p></li>
+<li><p>To reduce the number of features of the model, it is computed the shap values to select the most important features.</p></li>
+<li><p>Then, a gradient boosting regressor based model is trained with the selected features.</p></li>
+<li><p>Finally, the software allows to make predictions of GDP growth with the trained model.</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>Notes:</dt><dd><ul class="simple">
+<li><p>Selected features and the model are stored in persistent files so that they can be used again.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>For how to use the script, see <a class="reference internal" href="api/cli.html#module-cli" title="cli"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cli</span></code></a>.</p>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">gdp_growth_forecast</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">gdp_growth_forecast</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="api/modules.html" title="next chapter">gdp_growth_forecast</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Arturo del Cerro Vergara, Nil Bellmunt Vilalta and Diego Palacios Moreno.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

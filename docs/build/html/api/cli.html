@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cli module &#8212; gdp_growth_forecast 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="utils package" href="utils.html" />
+    <link rel="prev" title="gdp_growth_forecast" href="modules.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cli">
+<span id="cli-module"></span><h1>cli module<a class="headerlink" href="#module-cli" title="Permalink to this headline">¶</a></h1>
+<p>CLI script.</p>
+<p>This is the script to be executed by the user.
+It is used to select the model features, train the model and make the predictions.</p>
+<dl>
+<dt>Usage:</dt><dd><p>To select the features execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./cli.py select_features
+</pre></div>
+</div>
+<p>You can also specify the number of features to select (default is 50). For example, to select 40 features execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./cli.py select_features -N <span class="m">40</span>
+</pre></div>
+</div>
+<p>To train the model just run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./cli.py train
+</pre></div>
+</div>
+<p>To predict the GDP Growth for the 2011 year run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./cli.py predict
+</pre></div>
+</div>
+<p>The results are saved into the database. To predict a specified year (e.g. 1992) run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./cli.py predict --year <span class="m">1992</span>
+</pre></div>
+</div>
+<p>The prediction year must be between 1961 and 2011.</p>
+</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">gdp_growth_forecast</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">gdp_growth_forecast</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">gdp_growth_forecast</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">gdp_growth_forecast</a></li>
+      <li>Next: <a href="utils.html" title="next chapter">utils package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Arturo del Cerro Vergara, Nil Bellmunt Vilalta and Diego Palacios Moreno.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="../_sources/api/cli.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

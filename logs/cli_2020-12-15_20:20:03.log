@@ -1,0 +1,17 @@
+2020-12-15 20:20:03,116 - [INFO] - main - Selecting features
+2020-12-15 20:20:03,116 - [INFO] - utils.io - Reading database table 'CountryIndicators'
+2020-12-15 20:20:10,316 - [INFO] - utils.io - Reading database table 'Countries'
+2020-12-15 20:20:10,321 - [INFO] - utils.io - Database tables retrieved
+2020-12-15 20:20:10,322 - [INFO] - utils.preprocessing - Assembling dataset
+2020-12-15 20:20:12,831 - [INFO] - utils.preprocessing - Removing cols with na > 0.3 from year 1990
+2020-12-15 20:20:12,886 - [INFO] - utils.preprocessing - Filling Na with ['IncomeGroup', 'Year'] mean
+2020-12-15 20:20:32,588 - [INFO] - utils.preprocessing - Filling Na with IncomeGroup mean
+2020-12-15 20:20:33,412 - [INFO] - utils.preprocessing - Filling Na with Year mean
+2020-12-15 20:20:37,008 - [INFO] - utils.preprocessing - Dataset Na filled
+2020-12-15 20:20:37,012 - [INFO] - utils.preprocessing - Encoding dataset non numerical variables
+2020-12-15 20:20:37,030 - [INFO] - utils.preprocessing - Adding target variable 'NY.GDP.MKTP.KD.ZG'
+2020-12-15 20:20:37,045 - [INFO] - utils.io - Dataset processed
+2020-12-15 20:20:37,299 - [INFO] - utils.io - Processed dataset loaded
+2020-12-15 20:20:37,304 - [INFO] - utils.io - Selecting dataset features
+2020-12-15 20:20:50,229 - [INFO] - utils.feature_selection - '50' most imoprtant features selected
+2020-12-15 20:20:50,229 - [INFO] - main - Writting results to /projects/b72e2d28-3634-46de-b227-6fc35dd15108/gdp_growth_forecast/features/selected_features.json

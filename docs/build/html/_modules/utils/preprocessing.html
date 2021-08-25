@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.preprocessing &#8212; gdp_growth_forecast 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.preprocessing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Preprocessing module for manipulating the data.</span>
+
+<span class="sd">This module contains several functions to process the data retrieved from the database.</span>
+<span class="sd">This functions are useful to build the dataset for training and predicting.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="k">import</span> <span class="n">config</span>
+
+<div class="viewcode-block" id="remove_na_cols"><a class="viewcode-back" href="../../api/utils.html#utils.preprocessing.remove_na_cols">[docs]</a><span class="k">def</span> <span class="nf">remove_na_cols</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">na_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">from_year</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Removes columns with a proportion of na greater than `na_rate`.</span>
+<span class="sd">    </span>
+<span class="sd">    The proportion is only computed with rows that have a year greater or</span>
+<span class="sd">    equal to `from_year`. For this, the column ``&#39;Year&#39;`` must be on the dataframe.</span>
+<span class="sd">    </span>
+<span class="sd">    Args: </span>
+<span class="sd">        df (DataFrame): DataFrame</span>
+<span class="sd">        na_rate (float):  Maximum proportion of NaNs in a column.</span>
+<span class="sd">            This is only considering values from the given year.</span>
+<span class="sd">        from_year (int): Minimum year of samples to be considered when computing the na proportion.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: DataFrame with na columns as specified removed.</span>
+<span class="sd">    </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If na_rate is not in [0,1] interval.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; remove_na_cols(df, na_rate=0.3, from_year=1990)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">na_rate</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">na_rate</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Invalid {na_rate = }, must be in the [0, 1] interval.&quot;</span><span class="p">)</span>
+        
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Removing cols with na &gt; </span><span class="si">{na_rate}</span><span class="s2"> from year </span><span class="si">{from_year}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">from_year</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">na_rate</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="fill_na_with_mean_by"><a class="viewcode-back" href="../../api/utils.html#utils.preprocessing.fill_na_with_mean_by">[docs]</a><span class="k">def</span> <span class="nf">fill_na_with_mean_by</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fills the NaN values in a dataframe with the mean of the groups in the columns specified.</span>
+<span class="sd">    </span>
+<span class="sd">    If a given group does not contain any values, the mean can not be computed.</span>
+<span class="sd">    So the samples corresponding to this groups will still have Na.</span>
+<span class="sd">    </span>
+<span class="sd">    Args: </span>
+<span class="sd">        df (DataFrame): DataFrame</span>
+<span class="sd">        by (str, List[str]): list of column names (or single column name) used to make</span>
+<span class="sd">            the groups for the different means.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: DataFrame with NaN values filled if possible.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; filla_na_with_mean_by(df, [&#39;Column_i&#39;,&#39;Column_j&#39;])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Filling Na with </span><span class="si">{by}</span><span class="s2"> mean&quot;</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="substitute_dataset_na"><a class="viewcode-back" href="../../api/utils.html#utils.preprocessing.substitute_dataset_na">[docs]</a><span class="k">def</span> <span class="nf">substitute_dataset_na</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Substitutes the NaN values of the economic dataset with the means of different groups.</span>
+<span class="sd">    </span>
+<span class="sd">    Group are each time more general, in order to fill all NaN. This is done in 3 steps.</span>
+<span class="sd">        - Fill NaN with mean of the groups considering ``&#39;IncomeGroup&#39;`` and ``&#39;Year&#39;``</span>
+<span class="sd">        - Fill NaN with mean of the groups consifering ``&#39;IncomeGroup&#39;``</span>
+<span class="sd">        - Fill NaN with mean of the groups consifering ``&#39;Year&#39;``</span>
+<span class="sd">        </span>
+<span class="sd">    The resulting dataset does not have NaN values.</span>
+<span class="sd">    </span>
+<span class="sd">    Args: </span>
+<span class="sd">        df (DataFrame): The economic dataset.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Dataset with NaN values fixed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">res</span> <span class="o">=</span> <span class="n">fill_na_with_mean_by</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;IncomeGroup&#39;</span><span class="p">,</span> <span class="s1">&#39;Year&#39;</span><span class="p">])</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">fill_na_with_mean_by</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s1">&#39;IncomeGroup&#39;</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">fill_na_with_mean_by</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s1">&#39;Year&#39;</span><span class="p">)</span> <span class="c1"># after this there are no NaN in the dataset.</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Dataset Na filled&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="add_target_variable"><a class="viewcode-back" href="../../api/utils.html#utils.preprocessing.add_target_variable">[docs]</a><span class="k">def</span> <span class="nf">add_target_variable</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">target_name</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">TARGET</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add the target variable to predict inplace</span>
+<span class="sd">    </span>
+<span class="sd">    Args: </span>
+<span class="sd">        df (DataFrame): The economic dataset</span>
+<span class="sd">        target_name (str, optional): Name of the indicator to predict (target).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding target variable &#39;</span><span class="si">{target_name}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;CountryCode&#39;</span><span class="p">,</span> <span class="s1">&#39;Year&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;CountryCode&#39;</span><span class="p">)[</span><span class="n">target_name</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">periods</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># puts the indicator of the next year</span></div>
+
+<div class="viewcode-block" id="prepare_data"><a class="viewcode-back" href="../../api/utils.html#utils.preprocessing.prepare_data">[docs]</a><span class="k">def</span> <span class="nf">prepare_data</span><span class="p">(</span><span class="n">df_country_indicators</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">df_countries</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Assemble CountryIndicators and Countries dataframes by fixing NaN values and organizing the data in a workable way.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df_country_indicators (DataFrame): Dataframe containing the CountryIndicators data.</span>
+<span class="sd">        df_countries (DataFrame): Dataframe containing the Countries data.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Resulting dataset with arranged data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Assembling dataset&quot;</span><span class="p">)</span>
+    <span class="n">data_country_indicators</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">df_country_indicators</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;CountryCode&#39;</span><span class="p">,</span> <span class="s1">&#39;Year&#39;</span><span class="p">],</span>
+                  <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;IndicatorCode&#39;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;Value&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="n">data_cleaned</span> <span class="o">=</span> <span class="n">remove_na_cols</span><span class="p">(</span><span class="n">data_country_indicators</span><span class="p">,</span> <span class="n">na_rate</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">from_year</span><span class="o">=</span><span class="mi">1990</span><span class="p">)</span> <span class="c1"># remove columns with lots of NaN</span>
+    <span class="n">countrycodes_regions_incomegroup</span> <span class="o">=</span> <span class="n">df_countries</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,[</span><span class="s1">&#39;CountryCode&#39;</span><span class="p">,</span><span class="s1">&#39;Region&#39;</span><span class="p">,</span><span class="s1">&#39;IncomeGroup&#39;</span><span class="p">,</span><span class="s1">&#39;LongName&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+    <span class="n">joined_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">data_cleaned</span><span class="p">,</span> <span class="n">countrycodes_regions_incomegroup</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;CountryCode&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span> <span class="c1"># add some features of countries</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">substitute_dataset_na</span><span class="p">(</span><span class="n">joined_data</span><span class="p">)</span> <span class="c1"># replace all NaN</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="encode_dataset"><a class="viewcode-back" href="../../api/utils.html#utils.preprocessing.encode_dataset">[docs]</a><span class="k">def</span> <span class="nf">encode_dataset</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add important categorical variables encoded in the dataframe.</span>
+<span class="sd">    </span>
+<span class="sd">    Columns encoded are `Region` and `IncomeGroup`.</span>
+<span class="sd">    </span>
+<span class="sd">    Args: </span>
+<span class="sd">        df (DataFrame): Economic dataset with categorical variables</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: The dataset with the extra encoded columns.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Encoding dataset non numerical variables&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Region&#39;</span><span class="p">])</span>
+    <span class="n">income_group_encode_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Low income&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span>
+                                 <span class="s1">&#39;Lower middle income&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                 <span class="s1">&#39;Upper middle income&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                 <span class="s1">&#39;High income: nonOECD&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                 <span class="s1">&#39;High income: OECD&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                                 <span class="s1">&#39;&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;IncomeGroup_encoded&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;IncomeGroup&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">income_group_encode_dict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="drop_high_corr"><a class="viewcode-back" href="../../api/utils.html#utils.preprocessing.drop_high_corr">[docs]</a><span class="k">def</span> <span class="nf">drop_high_corr</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">max_corr</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Drop the indicators with correlation value grater than max_corr.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): dataframe</span>
+<span class="sd">        max_corr (float): Max correlation of columns. In the interval [0,1]</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Dataframe with the highly correlated columns removed</span>
+<span class="sd">    </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If max_corr is not in [0,1] interval</span>
+<span class="sd">    </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; drop_high_corr(df=data, max_corr=0.9)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">max_corr</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">max_corr</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Invalid {max_corr = }, must be in the [0, 1] interval.&quot;</span><span class="p">)</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Dropping columns with correlation higher than </span><span class="si">{max_corr}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">corr_matrix</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+    <span class="n">upper</span> <span class="o">=</span> <span class="n">corr_matrix</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">corr_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">))</span>
+    <span class="n">to_drop</span> <span class="o">=</span> <span class="p">[</span><span class="n">column</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">upper</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">upper</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_corr</span><span class="p">)]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">to_drop</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">gdp_growth_forecast</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">gdp_growth_forecast</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Arturo del Cerro Vergara, Nil Bellmunt Vilalta and Diego Palacios Moreno.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

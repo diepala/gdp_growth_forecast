@@ -1,0 +1,18 @@
+2020-12-15 20:21:01,961 - [INFO] - main - Training
+2020-12-15 20:21:01,961 - [INFO] - utils.io - Reading database table 'CountryIndicators'
+2020-12-15 20:21:08,977 - [INFO] - utils.io - Reading database table 'Countries'
+2020-12-15 20:21:08,982 - [INFO] - utils.io - Database tables retrieved
+2020-12-15 20:21:08,982 - [INFO] - utils.preprocessing - Assembling dataset
+2020-12-15 20:21:11,265 - [INFO] - utils.preprocessing - Removing cols with na > 0.3 from year 1990
+2020-12-15 20:21:11,316 - [INFO] - utils.preprocessing - Filling Na with ['IncomeGroup', 'Year'] mean
+2020-12-15 20:21:31,119 - [INFO] - utils.preprocessing - Filling Na with IncomeGroup mean
+2020-12-15 20:21:31,928 - [INFO] - utils.preprocessing - Filling Na with Year mean
+2020-12-15 20:21:35,543 - [INFO] - utils.preprocessing - Dataset Na filled
+2020-12-15 20:21:35,545 - [INFO] - utils.preprocessing - Encoding dataset non numerical variables
+2020-12-15 20:21:35,563 - [INFO] - utils.preprocessing - Adding target variable 'NY.GDP.MKTP.KD.ZG'
+2020-12-15 20:21:35,575 - [INFO] - utils.io - Dataset processed
+2020-12-15 20:21:35,827 - [INFO] - utils.io - Processed dataset loaded
+2020-12-15 20:21:35,832 - [INFO] - utils.io - Selecting dataset features
+2020-12-15 20:21:37,796 - [INFO] - utils.models - Model trained
+2020-12-15 20:21:37,796 - [INFO] - main - Saving model to /projects/b72e2d28-3634-46de-b227-6fc35dd15108/gdp_growth_forecast/models/trained_model.model
+2020-12-15 20:21:37,797 - [INFO] - utils.models - Model saved to '/projects/b72e2d28-3634-46de-b227-6fc35dd15108/gdp_growth_forecast/models/trained_model.model'

@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils.io &#8212; gdp_growth_forecast 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for utils.io</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">IO module for retrieving the dataset and loadding predictions to the database.</span>
+
+<span class="sd">Contains different functions for retrieving tables from the database, retriving the processed data,</span>
+<span class="sd">writting the predictions to the database, and retrieving the dataset for training and prediction.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="k">import</span> <span class="n">config</span>
+<span class="kn">import</span> <span class="nn">utils.preprocessing</span>
+
+
+<div class="viewcode-block" id="retrieve_table"><a class="viewcode-back" href="../../api/utils.html#utils.io.retrieve_table">[docs]</a><span class="k">def</span> <span class="nf">retrieve_table</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a table from the database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): Name of the table.</span>
+<span class="sd">            Possible values are ``&#39;Countries&#39;``, ``&#39;CountryNotes&#39;``, ``&#39;Footnotes&#39;``, ``&#39;CountryIndicators&#39;``,</span>
+<span class="sd">            ``&#39;Indicators&#39;``, ``&#39;IndicatorsNotes&#39;`` and ``&#39;EstimatedGPDGrowth&#39;``</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: The specified table.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If `name` is not a valid table.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">valid_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Countries&#39;</span><span class="p">,</span> <span class="s1">&#39;CountryNotes&#39;</span><span class="p">,</span> <span class="s1">&#39;Footnotes&#39;</span><span class="p">,</span> <span class="s1">&#39;CountryIndicators&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;Indicators&#39;</span><span class="p">,</span> <span class="s1">&#39;IndicatorsNotes&#39;</span><span class="p">,</span> <span class="s1">&#39;EstimatedGPDGrowth&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_names</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{name}</span><span class="s2">&#39; is not a valid table. Should be one of </span><span class="si">{valid_names}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Reading database table &#39;</span><span class="si">{name}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DATABASE_PATH</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;SELECT * from </span><span class="si">{name}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">table</span></div>
+
+<div class="viewcode-block" id="write_predictions_to_database"><a class="viewcode-back" href="../../api/utils.html#utils.io.write_predictions_to_database">[docs]</a><span class="k">def</span> <span class="nf">write_predictions_to_database</span><span class="p">(</span><span class="n">country_codes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">year</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Writes the predictions to the `EstimatedGPDGrowth` table in the database.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        country_codes (array): Array with the country codes of the predictions.</span>
+<span class="sd">        year (int): Year of the predictions.</span>
+<span class="sd">        values (array): Array with the predicted values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;CountryCode&#39;</span><span class="p">:</span> <span class="n">country_codes</span><span class="p">,</span> <span class="s1">&#39;Year&#39;</span><span class="p">:</span> <span class="n">year</span><span class="p">,</span> <span class="s1">&#39;Value&#39;</span><span class="p">:</span> <span class="n">values</span><span class="p">})</span> <span class="c1"># dataframe with the data</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Writting predictions of year </span><span class="si">{year}</span><span class="s2"> to database&quot;</span><span class="p">)</span>
+    <span class="c1"># write to database</span>
+    <span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">DATABASE_PATH</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="s1">&#39;EstimatedGPDGrowth&#39;</span><span class="p">,</span> <span class="n">conn</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+    
+
+<div class="viewcode-block" id="retrieve_processed_dataset"><a class="viewcode-back" href="../../api/utils.html#utils.io.retrieve_processed_dataset">[docs]</a><span class="k">def</span> <span class="nf">retrieve_processed_dataset</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the processed dataset.</span>
+<span class="sd">    </span>
+<span class="sd">    This function reads the data from the database, prepares the data by ordering and removing NaN values,</span>
+<span class="sd">    encodes the categorical features into numbers and adds the target variable to predict.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: The processed dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    
+    <span class="c1"># get the prepared data</span>
+    <span class="n">df_country_indicators</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">retrieve_table</span><span class="p">(</span><span class="s1">&#39;CountryIndicators&#39;</span><span class="p">)</span>
+    <span class="n">df_countries</span> <span class="o">=</span> <span class="n">data_countries</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">retrieve_table</span><span class="p">(</span><span class="s1">&#39;Countries&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Database tables retrieved&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">prepare_data</span><span class="p">(</span><span class="n">df_country_indicators</span><span class="p">,</span> <span class="n">df_countries</span><span class="p">)</span>
+    <span class="c1"># encode categorical variables</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">encode_dataset</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="c1"># add target variable to predict</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">add_target_variable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Dataset processed&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="retrieve_training_dataset"><a class="viewcode-back" href="../../api/utils.html#utils.io.retrieve_training_dataset">[docs]</a><span class="k">def</span> <span class="nf">retrieve_training_dataset</span><span class="p">(</span><span class="n">features</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the training dataset, with the selected features.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        features (str, List[str]): If &#39;all&#39;, all the numeric features are returned.</span>
+<span class="sd">            It can also be a list with the name of the features to select,</span>
+<span class="sd">            or the filename of a json file containing the list of features.</span>
+<span class="sd">            </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        X (pd.DataFrame): Training dataset features.</span>
+<span class="sd">        y (pd.DataFrame): Target variable to predict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    
+    <span class="n">data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">retrieve_processed_dataset</span><span class="p">()</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s1">&#39;number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span> <span class="c1"># drop rows without target variable</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processed dataset loaded&#39;</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Selecting dataset features&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">features</span><span class="o">==</span><span class="s1">&#39;all&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span>
+    
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">features</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;file must be in .json format&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">features</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    
+    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">features</span><span class="p">]</span> <span class="c1"># select features</span>
+    
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span></div>
+
+
+<div class="viewcode-block" id="retrieve_predict_dataset"><a class="viewcode-back" href="../../api/utils.html#utils.io.retrieve_predict_dataset">[docs]</a><span class="k">def</span> <span class="nf">retrieve_predict_dataset</span><span class="p">(</span><span class="n">features</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">year</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the predict dataset, with the selected features.</span>
+
+<span class="sd">    Selected features must have the same features the model have been trained with.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        features (str, List[str]): If &#39;all&#39;, all the numeric features are returned.</span>
+<span class="sd">            It can also be a list with the name of the features to select,</span>
+<span class="sd">            or the filename of a json file containing the list of features.</span>
+<span class="sd">        year (int): Year to predict. This will retrieve the necessary data to predict this year.</span>
+<span class="sd">            </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        X (pd.DataFrame): Predict dataset features.</span>
+<span class="sd">        country_codes (np.array): Country codes corresponding to the dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    
+    <span class="n">data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">retrieve_processed_dataset</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processed dataset loaded&#39;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">]</span><span class="o">==</span><span class="p">(</span><span class="n">year</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span> <span class="c1"># select rows to predict for the specified year</span>
+    <span class="n">country_codes</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;CountryCode&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="c1"># store the country codes, as they are dropped in the next line</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s1">&#39;number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Samples to predict selected&#39;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Selecting dataset features&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">features</span><span class="o">==</span><span class="s1">&#39;all&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">country_codes</span>
+    
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">features</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;file must be in .json format&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">features</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    
+    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">features</span><span class="p">]</span> <span class="c1"># select features</span>
+    
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">country_codes</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">gdp_growth_forecast</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">gdp_growth_forecast</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Arturo del Cerro Vergara, Nil Bellmunt Vilalta and Diego Palacios Moreno.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

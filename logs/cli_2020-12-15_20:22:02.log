@@ -1,0 +1,21 @@
+2020-12-15 20:22:02,801 - [INFO] - main - Predinting
+2020-12-15 20:22:02,802 - [INFO] - utils.io - Reading database table 'CountryIndicators'
+2020-12-15 20:22:09,813 - [INFO] - utils.io - Reading database table 'Countries'
+2020-12-15 20:22:09,818 - [INFO] - utils.io - Database tables retrieved
+2020-12-15 20:22:09,818 - [INFO] - utils.preprocessing - Assembling dataset
+2020-12-15 20:22:12,101 - [INFO] - utils.preprocessing - Removing cols with na > 0.3 from year 1990
+2020-12-15 20:22:12,153 - [INFO] - utils.preprocessing - Filling Na with ['IncomeGroup', 'Year'] mean
+2020-12-15 20:22:31,853 - [INFO] - utils.preprocessing - Filling Na with IncomeGroup mean
+2020-12-15 20:22:32,664 - [INFO] - utils.preprocessing - Filling Na with Year mean
+2020-12-15 20:22:36,265 - [INFO] - utils.preprocessing - Dataset Na filled
+2020-12-15 20:22:36,266 - [INFO] - utils.preprocessing - Encoding dataset non numerical variables
+2020-12-15 20:22:36,285 - [INFO] - utils.preprocessing - Adding target variable 'NY.GDP.MKTP.KD.ZG'
+2020-12-15 20:22:36,296 - [INFO] - utils.io - Dataset processed
+2020-12-15 20:22:36,515 - [INFO] - utils.io - Processed dataset loaded
+2020-12-15 20:22:36,529 - [INFO] - utils.io - Samples to predict selected
+2020-12-15 20:22:36,530 - [INFO] - utils.io - Selecting dataset features
+2020-12-15 20:22:36,531 - [INFO] - utils.models - Model in '/projects/b72e2d28-3634-46de-b227-6fc35dd15108/gdp_growth_forecast/models/trained_model.model' loaded
+2020-12-15 20:22:36,531 - [INFO] - utils.models - Making predictions
+2020-12-15 20:22:36,534 - [INFO] - main - GPD Growth for year 2011 predicted
+2020-12-15 20:22:36,534 - [INFO] - main - Writting results database
+2020-12-15 20:22:36,534 - [INFO] - utils.io - Writting predictions of year 2011 to database

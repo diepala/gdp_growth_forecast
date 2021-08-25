@@ -1,0 +1,504 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utils package &#8212; gdp_growth_forecast 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="cli module" href="cli.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="utils-package">
+<h1>utils package<a class="headerlink" href="#utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-utils.config">
+<span id="utils-config-module"></span><h2>utils.config module<a class="headerlink" href="#module-utils.config" title="Permalink to this headline">¶</a></h2>
+<p>Config module.</p>
+<p>This module contains some constants and global variables used in the project</p>
+</div>
+<div class="section" id="module-utils.feature_selection">
+<span id="utils-feature-selection-module"></span><h2>utils.feature_selection module<a class="headerlink" href="#module-utils.feature_selection" title="Permalink to this headline">¶</a></h2>
+<p>Module to select the most important features for a model.</p>
+<dl class="py function">
+<dt id="utils.feature_selection.select_features_with_shap">
+<code class="sig-prename descclassname">utils.feature_selection.</code><code class="sig-name descname">select_features_with_shap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">model_type</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="reference internal" href="../_modules/utils/feature_selection.html#select_features_with_shap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.feature_selection.select_features_with_shap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the most relevant features for the <cite>model</cite>.</p>
+<p>This computes the shap values to see which features are more important.
+Selects the features whose shap values have greater variance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>int</em>) – Number of features to select</p></li>
+<li><p><strong>model</strong> – Model that will be used to predict. Must implement scikit-learn API.</p></li>
+<li><p><strong>model_type</strong> (<em>str</em>) – Type of the model. At the moment only <code class="docutils literal notranslate"><span class="pre">'tree'</span></code> is supported.
+This includes decision trees, random-forests, and gradient boosting methods based on trees.</p></li>
+<li><p><strong>X</strong> (<em>DataFrame</em>) – Features data.</p></li>
+<li><p><strong>y</strong> (<em>array-like</em>) – Target variable data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List with the names of the selected features.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>k</cite> is not positive.
+    If <cite>model_type</cite> is not correct.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-utils.io">
+<span id="utils-io-module"></span><h2>utils.io module<a class="headerlink" href="#module-utils.io" title="Permalink to this headline">¶</a></h2>
+<p>IO module for retrieving the dataset and loadding predictions to the database.</p>
+<p>Contains different functions for retrieving tables from the database, retriving the processed data,
+writting the predictions to the database, and retrieving the dataset for training and prediction.</p>
+<dl class="py function">
+<dt id="utils.io.retrieve_predict_dataset">
+<code class="sig-prename descclassname">utils.io.</code><code class="sig-name descname">retrieve_predict_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">features</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">year</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>pandas.core.frame.DataFrame<span class="p">, </span>numpy.array<span class="p">]</span><a class="reference internal" href="../_modules/utils/io.html#retrieve_predict_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.io.retrieve_predict_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the predict dataset, with the selected features.</p>
+<p>Selected features must have the same features the model have been trained with.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> (<em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em>) – If ‘all’, all the numeric features are returned.
+It can also be a list with the name of the features to select,
+or the filename of a json file containing the list of features.</p></li>
+<li><p><strong>year</strong> (<em>int</em>) – Year to predict. This will retrieve the necessary data to predict this year.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Predict dataset features.
+country_codes (np.array): Country codes corresponding to the dataset.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>X (pd.DataFrame)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.io.retrieve_processed_dataset">
+<code class="sig-prename descclassname">utils.io.</code><code class="sig-name descname">retrieve_processed_dataset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="reference internal" href="../_modules/utils/io.html#retrieve_processed_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.io.retrieve_processed_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the processed dataset.</p>
+<p>This function reads the data from the database, prepares the data by ordering and removing NaN values,
+encodes the categorical features into numbers and adds the target variable to predict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The processed dataset.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.io.retrieve_table">
+<code class="sig-prename descclassname">utils.io.</code><code class="sig-name descname">retrieve_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="reference internal" href="../_modules/utils/io.html#retrieve_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.io.retrieve_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a table from the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the table.
+Possible values are <code class="docutils literal notranslate"><span class="pre">'Countries'</span></code>, <code class="docutils literal notranslate"><span class="pre">'CountryNotes'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Footnotes'</span></code>, <code class="docutils literal notranslate"><span class="pre">'CountryIndicators'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'Indicators'</span></code>, <code class="docutils literal notranslate"><span class="pre">'IndicatorsNotes'</span></code> and <code class="docutils literal notranslate"><span class="pre">'EstimatedGPDGrowth'</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The specified table.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>name</cite> is not a valid table.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.io.retrieve_training_dataset">
+<code class="sig-prename descclassname">utils.io.</code><code class="sig-name descname">retrieve_training_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">features</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>pandas.core.frame.DataFrame<span class="p">, </span>pandas.core.frame.DataFrame<span class="p">]</span><a class="reference internal" href="../_modules/utils/io.html#retrieve_training_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.io.retrieve_training_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the training dataset, with the selected features.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>features</strong> (<em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em>) – If ‘all’, all the numeric features are returned.
+It can also be a list with the name of the features to select,
+or the filename of a json file containing the list of features.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Training dataset features.
+y (pd.DataFrame): Target variable to predict.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>X (pd.DataFrame)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.io.write_predictions_to_database">
+<code class="sig-prename descclassname">utils.io.</code><code class="sig-name descname">write_predictions_to_database</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">country_codes</span><span class="p">:</span> <span class="n">numpy.array</span></em>, <em class="sig-param"><span class="n">year</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/io.html#write_predictions_to_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.io.write_predictions_to_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the predictions to the <cite>EstimatedGPDGrowth</cite> table in the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>country_codes</strong> (<em>array</em>) – Array with the country codes of the predictions.</p></li>
+<li><p><strong>year</strong> (<em>int</em>) – Year of the predictions.</p></li>
+<li><p><strong>values</strong> (<em>array</em>) – Array with the predicted values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-utils.models">
+<span id="utils-models-module"></span><h2>utils.models module<a class="headerlink" href="#module-utils.models" title="Permalink to this headline">¶</a></h2>
+<p>Models module</p>
+<p>This module contains the predictor class.</p>
+<dl class="py class">
+<dt id="utils.models.GDPGrowthPredictor">
+<em class="property">class </em><code class="sig-prename descclassname">utils.models.</code><code class="sig-name descname">GDPGrowthPredictor</code><a class="reference internal" href="../_modules/utils/models.html#GDPGrowthPredictor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.models.GDPGrowthPredictor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>GPDGrowthPredictor.</p>
+<p>Model to make the predictions of the GDPGrowth.</p>
+<dl class="py method">
+<dt id="utils.models.GDPGrowthPredictor.get_internal_model">
+<code class="sig-name descname">get_internal_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; xgboost.sklearn.XGBRegressor<a class="reference internal" href="../_modules/utils/models.html#GDPGrowthPredictor.get_internal_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.models.GDPGrowthPredictor.get_internal_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the internal model, i.e. the gradient boosting regressor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The internal model</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>XGBRegressor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.models.GDPGrowthPredictor.load">
+<em class="property">static </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#utils.models.GDPGrowthPredictor" title="utils.models.GDPGrowthPredictor">utils.models.GDPGrowthPredictor</a><a class="reference internal" href="../_modules/utils/models.html#GDPGrowthPredictor.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.models.GDPGrowthPredictor.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load model from file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Filename where the model is saved.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The model loaded</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#utils.models.GDPGrowthPredictor" title="utils.models.GDPGrowthPredictor">GDPGrowthPredictor</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.models.GDPGrowthPredictor.predict">
+<code class="sig-name descname">predict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="reference internal" href="../_modules/utils/models.html#GDPGrowthPredictor.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.models.GDPGrowthPredictor.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>DataFrame</em>) – Features data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Predictions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.models.GDPGrowthPredictor.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/models.html#GDPGrowthPredictor.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.models.GDPGrowthPredictor.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save model to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Path to file where the model will be stored.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.models.GDPGrowthPredictor.train">
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/models.html#GDPGrowthPredictor.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.models.GDPGrowthPredictor.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>DataFrame</em>) – Features data.</p></li>
+<li><p><strong>y</strong> (<em>DataFrame</em>) – Target values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-utils.preprocessing">
+<span id="utils-preprocessing-module"></span><h2>utils.preprocessing module<a class="headerlink" href="#module-utils.preprocessing" title="Permalink to this headline">¶</a></h2>
+<p>Preprocessing module for manipulating the data.</p>
+<p>This module contains several functions to process the data retrieved from the database.
+This functions are useful to build the dataset for training and predicting.</p>
+<dl class="py function">
+<dt id="utils.preprocessing.add_target_variable">
+<code class="sig-prename descclassname">utils.preprocessing.</code><code class="sig-name descname">add_target_variable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">target_name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'NY.GDP.MKTP.KD.ZG'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/preprocessing.html#add_target_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.preprocessing.add_target_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the target variable to predict inplace</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – The economic dataset</p></li>
+<li><p><strong>target_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the indicator to predict (target).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.preprocessing.drop_high_corr">
+<code class="sig-prename descclassname">utils.preprocessing.</code><code class="sig-name descname">drop_high_corr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">max_corr</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="reference internal" href="../_modules/utils/preprocessing.html#drop_high_corr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.preprocessing.drop_high_corr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drop the indicators with correlation value grater than max_corr.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – dataframe</p></li>
+<li><p><strong>max_corr</strong> (<em>float</em>) – Max correlation of columns. In the interval [0,1]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataframe with the highly correlated columns removed</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If max_corr is not in [0,1] interval</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">drop_high_corr</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">max_corr</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.preprocessing.encode_dataset">
+<code class="sig-prename descclassname">utils.preprocessing.</code><code class="sig-name descname">encode_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="reference internal" href="../_modules/utils/preprocessing.html#encode_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.preprocessing.encode_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add important categorical variables encoded in the dataframe.</p>
+<p>Columns encoded are <cite>Region</cite> and <cite>IncomeGroup</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>DataFrame</em>) – Economic dataset with categorical variables</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dataset with the extra encoded columns.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.preprocessing.fill_na_with_mean_by">
+<code class="sig-prename descclassname">utils.preprocessing.</code><code class="sig-name descname">fill_na_with_mean_by</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">by</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="reference internal" href="../_modules/utils/preprocessing.html#fill_na_with_mean_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.preprocessing.fill_na_with_mean_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fills the NaN values in a dataframe with the mean of the groups in the columns specified.</p>
+<p>If a given group does not contain any values, the mean can not be computed.
+So the samples corresponding to this groups will still have Na.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame</p></li>
+<li><p><strong>by</strong> (<em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em>) – list of column names (or single column name) used to make
+the groups for the different means.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame with NaN values filled if possible.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filla_na_with_mean_by</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Column_i&#39;</span><span class="p">,</span><span class="s1">&#39;Column_j&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.preprocessing.prepare_data">
+<code class="sig-prename descclassname">utils.preprocessing.</code><code class="sig-name descname">prepare_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df_country_indicators</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">df_countries</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="reference internal" href="../_modules/utils/preprocessing.html#prepare_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.preprocessing.prepare_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assemble CountryIndicators and Countries dataframes by fixing NaN values and organizing the data in a workable way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_country_indicators</strong> (<em>DataFrame</em>) – Dataframe containing the CountryIndicators data.</p></li>
+<li><p><strong>df_countries</strong> (<em>DataFrame</em>) – Dataframe containing the Countries data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Resulting dataset with arranged data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.preprocessing.remove_na_cols">
+<code class="sig-prename descclassname">utils.preprocessing.</code><code class="sig-name descname">remove_na_cols</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em>, <em class="sig-param"><span class="n">na_rate</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">from_year</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="reference internal" href="../_modules/utils/preprocessing.html#remove_na_cols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.preprocessing.remove_na_cols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes columns with a proportion of na greater than <cite>na_rate</cite>.</p>
+<p>The proportion is only computed with rows that have a year greater or
+equal to <cite>from_year</cite>. For this, the column <code class="docutils literal notranslate"><span class="pre">'Year'</span></code> must be on the dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame</p></li>
+<li><p><strong>na_rate</strong> (<em>float</em>) – Maximum proportion of NaNs in a column.
+This is only considering values from the given year.</p></li>
+<li><p><strong>from_year</strong> (<em>int</em>) – Minimum year of samples to be considered when computing the na proportion.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame with na columns as specified removed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If na_rate is not in [0,1] interval.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">remove_na_cols</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">na_rate</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">from_year</span><span class="o">=</span><span class="mi">1990</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.preprocessing.substitute_dataset_na">
+<code class="sig-prename descclassname">utils.preprocessing.</code><code class="sig-name descname">substitute_dataset_na</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="reference internal" href="../_modules/utils/preprocessing.html#substitute_dataset_na"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils.preprocessing.substitute_dataset_na" title="Permalink to this definition">¶</a></dt>
+<dd><p>Substitutes the NaN values of the economic dataset with the means of different groups.</p>
+<dl class="simple">
+<dt>Group are each time more general, in order to fill all NaN. This is done in 3 steps.</dt><dd><ul class="simple">
+<li><p>Fill NaN with mean of the groups considering <code class="docutils literal notranslate"><span class="pre">'IncomeGroup'</span></code> and <code class="docutils literal notranslate"><span class="pre">'Year'</span></code></p></li>
+<li><p>Fill NaN with mean of the groups consifering <code class="docutils literal notranslate"><span class="pre">'IncomeGroup'</span></code></p></li>
+<li><p>Fill NaN with mean of the groups consifering <code class="docutils literal notranslate"><span class="pre">'Year'</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<p>The resulting dataset does not have NaN values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>DataFrame</em>) – The economic dataset.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dataset with NaN values fixed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-utils" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">gdp_growth_forecast</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">gdp_growth_forecast</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cli.html">cli module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">gdp_growth_forecast</a><ul>
+      <li>Previous: <a href="cli.html" title="previous chapter">cli module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Arturo del Cerro Vergara, Nil Bellmunt Vilalta and Diego Palacios Moreno.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="../_sources/api/utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
